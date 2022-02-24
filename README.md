@@ -1,4 +1,4 @@
-# daily
+# Daily
 
 A new Flutter project.
 
