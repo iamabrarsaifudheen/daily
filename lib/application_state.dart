@@ -36,7 +36,7 @@ class ApplicationState extends ChangeNotifier {
           _guestBookMessages = [];
           for (final document in snapshot.docs) {
             _guestBookMessages.add(
-              GuestBookMessage(
+              EntryMessage(
                 name: document.data()['name'] as String,
                 message: document.data()['text'] as String,
               ),
@@ -59,8 +59,8 @@ class ApplicationState extends ChangeNotifier {
   String? _email;
   String? get email => _email;
   StreamSubscription<QuerySnapshot>? _guestBookSubscription;
-  List<GuestBookMessage> _guestBookMessages = [];
-  List<GuestBookMessage> get guestBookMessages => _guestBookMessages;
+  List<EntryMessage> _guestBookMessages = [];
+  List<EntryMessage> get guestBookMessages => _guestBookMessages;
 
   void startLoginFlow() {
     _loginState = ApplicationLoginState.emailAddress;

@@ -14,8 +14,8 @@ enum ApplicationLoginState {
   loggedIn,
 }
 
-class GuestBookMessage {
-  GuestBookMessage({required this.name, required this.message});
+class EntryMessage {
+  EntryMessage({required this.name, required this.message});
   final String name;
   final String message;
 }
@@ -127,7 +127,7 @@ class Authentication extends StatelessWidget {
                     if (appState.loginState ==
                         ApplicationLoginState.loggedIn) ...[
                       const Header('Entry'),
-                      GuestBook(
+                      Entry(
                           addMessage: (message) =>
                               appState.addMessageToGuestBook(message),
                           messages: appState.guestBookMessages),
@@ -470,16 +470,16 @@ class _PasswordFormState extends State<PasswordForm> {
   }
 }
 
-class GuestBook extends StatefulWidget {
-  const GuestBook({required this.addMessage, required this.messages});
+class Entry extends StatefulWidget {
+  const Entry({required this.addMessage, required this.messages});
   final FutureOr<void> Function(String message) addMessage;
-  final List<GuestBookMessage> messages;
+  final List<EntryMessage> messages;
 
   @override
-  _GuestBookState createState() => _GuestBookState();
+  _EntryState createState() => _EntryState();
 }
 
-class _GuestBookState extends State<GuestBook> {
+class _EntryState extends State<Entry> {
   final _formKey = GlobalKey<FormState>(debugLabel: '_GuestBookState');
   final _controller = TextEditingController();
 
