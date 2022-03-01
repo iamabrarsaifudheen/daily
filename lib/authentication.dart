@@ -14,6 +14,12 @@ enum ApplicationLoginState {
   loggedIn,
 }
 
+class GuestBookMessage {
+  GuestBookMessage({required this.name, required this.message});
+  final String name;
+  final String message;
+}
+
 class Authentication extends StatelessWidget {
   const Authentication({
     required this.loginState,
@@ -63,18 +69,17 @@ class Authentication extends StatelessWidget {
               SizedBox(
                 height: 20,
               ),
-              Image.asset("assets/images/signup.png"),
+              Text(
+                  "Daily helps you to write everything happend in your day with security"),
+              // Image.asset("assets/images/signup.png"),
               SizedBox(
                 height: 20,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 24, bottom: 8),
-                child: StyledButton(
-                  onPressed: () {
-                    startLoginFlow();
-                  },
-                  child: const Text('Get Started'),
-                ),
+              StyledButton(
+                onPressed: () {
+                  startLoginFlow();
+                },
+                child: const Text('Get Started'),
               ),
             ],
           ),
@@ -111,33 +116,36 @@ class Authentication extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        return Column(
-          children: [
-            Consumer<ApplicationState>(
-              builder: (context, appState, _) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (appState.loginState ==
-                      ApplicationLoginState.loggedIn) ...[
-                    const Header('Discussion'),
-                    GuestBook(
-                      addMessage: (message) =>
-                          appState.addMessageToGuestBook(message),
-                    ),
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Consumer<ApplicationState>(
+                builder: (context, appState, _) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // GuestBook(addMessage: (message) => print(message)),
+                    if (appState.loginState ==
+                        ApplicationLoginState.loggedIn) ...[
+                      const Header('Entry'),
+                      GuestBook(
+                          addMessage: (message) =>
+                              appState.addMessageToGuestBook(message),
+                          messages: appState.guestBookMessages),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 24, bottom: 8),
-              child: StyledButton(
-                onPressed: () {
-                  signOut();
-                },
-                child: const Text('LOGOUT'),
+              Padding(
+                padding: const EdgeInsets.only(left: 24, bottom: 8),
+                child: StyledButton(
+                  onPressed: () {
+                    signOut();
+                  },
+                  child: const Text('LOGOUT'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       default:
         return Row(
@@ -463,8 +471,9 @@ class _PasswordFormState extends State<PasswordForm> {
 }
 
 class GuestBook extends StatefulWidget {
-  const GuestBook({required this.addMessage});
+  const GuestBook({required this.addMessage, required this.messages});
   final FutureOr<void> Function(String message) addMessage;
+  final List<GuestBookMessage> messages;
 
   @override
   _GuestBookState createState() => _GuestBookState();
@@ -476,45 +485,53 @@ class _GuestBookState extends State<GuestBook> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Form(
-        key: _formKey,
-        child: Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: 'Leave a message',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            key: _formKey,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: 'Leave a message',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter your message to continue';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter your message to continue';
-                  }
-                  return null;
-                },
-              ),
+                const SizedBox(width: 8),
+                StyledButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await widget.addMessage(_controller.text);
+                      _controller.clear();
+                    }
+                  },
+                  child: Row(
+                    children: const [
+                      Icon(Icons.send),
+                      SizedBox(width: 4),
+                      Text('SEND'),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            StyledButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  await widget.addMessage(_controller.text);
-                  _controller.clear();
-                }
-              },
-              child: Row(
-                children: const [
-                  Icon(Icons.send),
-                  SizedBox(width: 4),
-                  Text('SEND'),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 8),
+        for (var message in widget.messages) Paragraph(' ${message.message}'),
+        const SizedBox(height: 8),
+      ],
     );
   }
 }
