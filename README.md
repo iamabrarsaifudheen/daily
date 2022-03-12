@@ -1,10 +1,10 @@
 # Daily
 This project is a diary app what it does is that it helps to log in to the appa and store our daily reflections 
 ## Team members
-1. Name [Embed personal github URL]
-2. Name [Embed perosnal github URL]
+1. Mohamed Abrar Saifudheen
+2. Vishnu VS
 ## Team Id
-Team id here
+Flutter/1
 ## Link to product walkthrough
 [link to video]
 ## How it Works ?
